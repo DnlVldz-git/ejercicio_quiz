@@ -27,7 +27,7 @@ public class ResponderDialog extends JDialog{
     private JButton btnCancelar;
     
     public ResponderDialog(JFrame frame){
-        super.setSize(300, 250);
+        super.setSize(300, 130);
         super.setLocationRelativeTo(frame);
         
         this.pnl = new JPanel();
