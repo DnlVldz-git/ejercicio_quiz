@@ -203,7 +203,7 @@ public class PrincipalFrame extends JFrame {
                     numPre += 1;
                 }else if((numPre == quiz.getNumPreguntas())){
                     quizDialog.limpiarSeleccion();
-                    JOptionPane.showMessageDialog(quizDialog, "Ha contestado el examen, su calificación es: \n"+((numCorrectas/quiz.getNumPreguntas())*100)+"\nCon "+numCorrectas+"/"+quiz.getNumPreguntas()+" aciertos" );
+                    JOptionPane.showMessageDialog(quizDialog, "Ha contestado el examen, su calificación es: \n"+(float)(((float)numCorrectas/(float)quiz.getNumPreguntas())*100)+"\nCon "+numCorrectas+"/"+quiz.getNumPreguntas()+" aciertos" );
                     quizDialog.setVisible(false);
                 }
 
