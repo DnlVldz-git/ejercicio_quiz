@@ -5,6 +5,7 @@
  */
 package Func;
 
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -31,6 +32,10 @@ public class Quiz1Exception extends Exception {
      */
     public Quiz1Exception(String msg, JPanel pnl) {
         JOptionPane.showMessageDialog(pnl, msg);
+    }
+    
+    public Quiz1Exception(String msg, JDialog dialog) {
+        JOptionPane.showMessageDialog(dialog, msg);
     }
     
     public Quiz1Exception(String msg) {

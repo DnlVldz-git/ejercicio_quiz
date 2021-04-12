@@ -31,6 +31,7 @@ public class PrincipalFrame extends JFrame {
     private CrearQuizDialog crearDialog;
     private ArrayList<Quiz> quizes;
     private Controller control;
+    private LoginDialog loginDialog;
     private PreguntaDialog preguntasDialog;
     private ResponderDialog responderDialog;
     private QuizDialog quizDialog;
@@ -42,13 +43,15 @@ public class PrincipalFrame extends JFrame {
     public PrincipalFrame() throws ClassNotFoundException {
         super("Test");
         super.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        super.setSize(140, 100);
+        super.setSize(630, 100);
         super.setLocationRelativeTo(null);
 
         cont = 0;
         numPre = 0;
         numPreguntas = 0;
         numCorrectas = 0;
+
+        this.loginDialog = new LoginDialog();
 
         this.quizes = new ArrayList();
 
@@ -65,15 +68,6 @@ public class PrincipalFrame extends JFrame {
         quizDialog = new QuizDialog(this);
 
         control.cargar();
-
-        FrameActionListener crearDialogButton = new FrameActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                crearDialog.setVisible(true);
-                numPre = 0;
-                numPreguntas = 0;
-            }
-        };
 
         FrameActionListener crearDialogAceptarButton = new FrameActionListener() {
             @Override
@@ -100,10 +94,37 @@ public class PrincipalFrame extends JFrame {
             }
         };
 
+        FrameActionListener loginDialogAceptarButton = new FrameActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    if ((loginDialog.getFldUsuario().equals("alumno")) && (loginDialog.getFldContraseña().equals("1234"))) {
+                        responderDialog.cleanCombo();
+                        loginDialog.clear();
+                        responderDialog.setVisible(true);
+                        responderDialog.fillCombo(control.getPreguntas());
+                        numPre = 0;
+                        numPreguntas = 0;
+
+                    } else if ((loginDialog.getFldUsuario().equals("profesor")) && (loginDialog.getFldContraseña().equals("12345"))) {
+                        loginDialog.clear();
+                        crearDialog.setVisible(true);
+                        numPre = 0;
+                        numPreguntas = 0;
+                    } else {
+                        throw new Quiz1Exception("Contraseña o usuario incorrecto");
+                    }
+                } catch (Quiz1Exception ex) {
+                    Logger.getLogger(PrincipalFrame.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+            }
+        };
+
         FrameActionListener preguntasDialogSiguienteButton = new FrameActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                
+
                 try {
                     if ((numPre == (numPreguntas - 1))) {
                         Pregunta pregunta = new Pregunta(preguntasDialog.getTxtFldEnunciadoTxt(),
@@ -139,18 +160,7 @@ public class PrincipalFrame extends JFrame {
                 }
                 preguntasDialog.limpiarSeleccion();
             }
-            
-        };
 
-        FrameActionListener responderButton = new FrameActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                responderDialog.cleanCombo();
-                responderDialog.setVisible(true);
-                responderDialog.fillCombo(control.getPreguntas());
-                numPre = 0;
-                numPreguntas = 0;
-            }
         };
 
         FrameActionListener responderDialogCancelarButton = new FrameActionListener() {
@@ -175,51 +185,97 @@ public class PrincipalFrame extends JFrame {
                 quizDialog.setLblOpcion3(preguntas.get(0).getOp3());
                 quizDialog.setLblOpcion4(preguntas.get(0).getOp4());
                 numPre += 1;
-                quizDialog.setVisible(true);                
+                quizDialog.setVisible(true);
+                quizDialog.setLblNumeracion(numPre + " de " + quiz.getNumPreguntas());
             }
-            
+
         };
 
         FrameActionListener quizDialogSiguienteButton = new FrameActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {     
-                
+            public void actionPerformed(ActionEvent e) {
                 Quiz quiz = control.getPreguntasAt(responderDialog.getComboBoxIndex());
-                numPreguntas = quiz.getNumPreguntas();
-                ArrayList<Pregunta> preguntas = quiz.getPreguntas();
-                if (esCorrecta(preguntas.get(numPre-1), getCorrecta())) {
-                    numCorrectas+=1;
-                }
                 
-                if (!respuestaVacia()){
-                    JOptionPane.showMessageDialog(quizDialog, "Selecciones una respuesta");
-                }else if((numPre != quiz.getNumPreguntas())) {
+                if (quiz.getRespuesta(numPre-1) == -1) {
+
+                } else {
+                    setSeleccionQuizDialog(quiz.getRespuesta(numPre-1));
+                }  
+                
+                numPreguntas = quiz.getNumPreguntas();
+                ArrayList<Pregunta> preguntas = quiz.getPreguntas();               
+                quizDialog.setLblNumeracion(numPre + " de " + quiz.getNumPreguntas());
+                
+                if ((esCorrecta(preguntas.get(numPre - 1), getCorrecta()))&&(quiz.getRespuesta(numPre-1) == -1)) {
+                    numCorrectas += 1;
+                    System.out.println("Correctas: "+ numCorrectas);
+                }
+
+                if (!respuestaVacia()) {
+                    JOptionPane.showMessageDialog(quizDialog, "Seleccione una respuesta");
+                } else if ((numPre != quiz.getNumPreguntas())) {                    
+                    quiz.setRespuestas(numPre-1, getCorrecta());
                     quizDialog.limpiarSeleccion();
                     quizDialog.setLblEnunciado(preguntas.get(numPre).getPregunta());
                     quizDialog.setLblOpcion1(preguntas.get(numPre).getOp1());
                     quizDialog.setLblOpcion2(preguntas.get(numPre).getOp2());
                     quizDialog.setLblOpcion3(preguntas.get(numPre).getOp3());
-                    quizDialog.setLblOpcion4(preguntas.get(numPre).getOp4());
+                    quizDialog.setLblOpcion4(preguntas.get(numPre).getOp4());                    
                     numPre += 1;
-                }else if((numPre == quiz.getNumPreguntas())){
+                } else if ((numPre == quiz.getNumPreguntas())) {
                     quizDialog.limpiarSeleccion();
-                    JOptionPane.showMessageDialog(quizDialog, "Ha contestado el examen, su calificación es: \n"+(float)(((float)numCorrectas/(float)quiz.getNumPreguntas())*100)+"\nCon "+numCorrectas+"/"+quiz.getNumPreguntas()+" aciertos" );
+                    JOptionPane.showMessageDialog(quizDialog, "Ha contestado el examen, su calificación es: \n" + (float) (((float) numCorrectas / (float) quiz.getNumPreguntas()) * 100) + "\nCon " + numCorrectas + "/" + quiz.getNumPreguntas() + " aciertos");
                     quizDialog.setVisible(false);
                 }
-
+                System.out.println(numPre);
+                quizDialog.setLblNumeracion(numPre + " de " + quiz.getNumPreguntas());
+                
             }
         };
 
-        mainPnl.getBtnCrear().addActionListener(crearDialogButton);
-        mainPnl.getBtnResponder().addActionListener(responderButton);
+        FrameActionListener quizDialogAnteriorButton = new FrameActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (numPre - 2 < 0) {
+                    try {
+                        throw new Quiz1Exception("No se puede retroceder más", quizDialog);
+                    } catch (Quiz1Exception ex) {
+                        Logger.getLogger(PrincipalFrame.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                } else {
+
+                    Quiz quiz = control.getPreguntasAt(responderDialog.getComboBoxIndex());
+                    
+                    numPreguntas = quiz.getNumPreguntas();
+                    ArrayList<Pregunta> preguntas = quiz.getPreguntas();
+                    --numPre;
+                    quizDialog.setLblNumeracion(numPre + " de " + quiz.getNumPreguntas());
+
+                    quizDialog.limpiarSeleccion();
+                    if (quiz.getRespuesta(numPre-1) == -1) {
+
+                    } else {
+                        setSeleccionQuizDialog(quiz.getRespuesta(numPre-1));
+                    }
+                    quizDialog.setLblEnunciado(preguntas.get(numPre - 1).getPregunta());
+                    quizDialog.setLblOpcion1(preguntas.get(numPre - 1).getOp1());
+                    quizDialog.setLblOpcion2(preguntas.get(numPre - 1).getOp2());
+                    quizDialog.setLblOpcion3(preguntas.get(numPre - 1).getOp3());
+                    quizDialog.setLblOpcion4(preguntas.get(numPre - 1).getOp4());
+                }
+            }
+        };
+
+        loginDialog.getBtnAceptar().addActionListener(loginDialogAceptarButton);
         responderDialog.getBtnAceptar().addActionListener(responderDialogAceptarButton);
         responderDialog.getBtnCancelar().addActionListener(responderDialogCancelarButton);
         quizDialog.getBtnSiguiente().addActionListener(quizDialogSiguienteButton);
+        quizDialog.getBtnAnterior().addActionListener(quizDialogAnteriorButton);
         crearDialog.getBtnAceptar().addActionListener(crearDialogAceptarButton);
         crearDialog.getBtnCancelar().addActionListener(crearDialogCancelarButton);
         preguntasDialog.getBtnSiguiente().addActionListener(preguntasDialogSiguienteButton);
 
-        super.add(this.mainPnl);
+        super.add(this.loginDialog);
         super.setVisible(true);
     }
 
@@ -236,7 +292,7 @@ public class PrincipalFrame extends JFrame {
             return 0;
         }
     }
-    
+
     public int getCorrecta() {
         if (quizDialog.getrBtnOpcion1().isSelected()) {
             return 1;
@@ -250,19 +306,36 @@ public class PrincipalFrame extends JFrame {
             return 0;
         }
     }
-    
-    public boolean esCorrecta(Pregunta pregunta, int resp){
+
+    public void setSeleccionQuizDialog(int num) {
+        switch (num) {
+            case 1:
+                quizDialog.getrBtnOpcion1().setSelected(true);
+                break;
+            case 2:
+                quizDialog.getrBtnOpcion2().setSelected(true);
+                break;
+            case 3:
+                quizDialog.getrBtnOpcion3().setSelected(true);
+                break;
+            case 4:
+                quizDialog.getrBtnOpcion4().setSelected(true);
+                break;
+        }
+    }
+
+    public boolean esCorrecta(Pregunta pregunta, int resp) {
         if (resp == pregunta.getCorrecta()) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
-    
-    public boolean respuestaVacia(){
-        if ((quizDialog.getrBtnOpcion1().isSelected())||(quizDialog.getrBtnOpcion2().isSelected())||(quizDialog.getrBtnOpcion3().isSelected())||(quizDialog.getrBtnOpcion4().isSelected())) {
-           return true;
-        } else{
+
+    public boolean respuestaVacia() {
+        if ((quizDialog.getrBtnOpcion1().isSelected()) || (quizDialog.getrBtnOpcion2().isSelected()) || (quizDialog.getrBtnOpcion3().isSelected()) || (quizDialog.getrBtnOpcion4().isSelected())) {
+            return true;
+        } else {
             return false;
         }
     }

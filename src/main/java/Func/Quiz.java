@@ -12,26 +12,30 @@ import java.util.ArrayList;
  *
  * @author dani
  */
-public class Quiz implements Serializable{
+public class Quiz implements Serializable {
+
     private String nombre;
     private String asignatura;
     private int numPreguntas;
+    private Integer[] respuestas;
     private ArrayList<Pregunta> preguntas;
-    
-    public Quiz(String nombre, String asignatura, int num){
+
+    public Quiz(String nombre, String asignatura, int num) {
         this.nombre = nombre;
         this.asignatura = asignatura;
         this.numPreguntas = num;
-        preguntas = new ArrayList();        
+        this.respuestas = new Integer[num];
+        fill();
+        preguntas = new ArrayList();
     }
-    
-    public void add(Pregunta pregunta){
+
+    public void add(Pregunta pregunta) {
         preguntas.add(pregunta);
     }
 
     public int getNumPreguntas() {
         return numPreguntas;
-    }        
+    }
 
     public String getNombre() {
         return nombre;
@@ -44,8 +48,19 @@ public class Quiz implements Serializable{
     public ArrayList<Pregunta> getPreguntas() {
         return preguntas;
     }
-    
-    
-    
-     
+
+    public void setRespuestas(int index, int resp) {
+        respuestas[index] = resp;
+    }
+
+    public int getRespuesta(int index) {
+        return respuestas[index];
+    }
+
+    public void fill() {
+        for (int i = 0; i < numPreguntas; i++) {
+            respuestas[i] = -1;
+        }
+    }
+
 }
