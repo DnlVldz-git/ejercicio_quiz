@@ -6,6 +6,8 @@
 package GUI;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -22,18 +24,24 @@ public class QuizDialog extends JDialog {
 
     private JPanel pnl;
     private JPanel pnl2;
-    private JPanel pnl3;    
+    private JPanel pnl3;   
+    private JPanel pnlP1;
+    private JPanel pnlP2;
+    private JPanel pnlP3;
+    private JPanel pnlP4;
     private JLabel lblEnunciado;
     private JLabel lblOpcion1;
     private JLabel lblOpcion2;
     private JLabel lblOpcion3;
     private JLabel lblOpcion4;
+    private JLabel lblNumeracion;
     private ButtonGroup group;
     private JRadioButton rBtnOpcion1;
     private JRadioButton rBtnOpcion2;
     private JRadioButton rBtnOpcion3;
     private JRadioButton rBtnOpcion4;
     private JButton btnSiguiente;
+    private JButton btnAnterior;
 
     public QuizDialog(JFrame frame) {
         super.setSize(300, 330);
@@ -41,12 +49,21 @@ public class QuizDialog extends JDialog {
 
         this.pnl = new JPanel();  
         this.pnl2 = new JPanel();
+        
+        pnl2.setLayout(new BoxLayout(pnl2, BoxLayout.Y_AXIS));
+        
         this.pnl3 = new JPanel();        
         this.lblEnunciado = new JLabel();
         this.lblOpcion1 = new JLabel();
         this.lblOpcion2 = new JLabel();
         this.lblOpcion3 = new JLabel();
         this.lblOpcion4 = new JLabel();
+        this.lblNumeracion = new JLabel();
+        
+        this.pnlP1 = new JPanel();
+        this.pnlP2 = new JPanel();
+        this.pnlP3 = new JPanel();
+        this.pnlP4 = new JPanel();                
 
         group = new ButtonGroup();
         rBtnOpcion1 = new JRadioButton();
@@ -59,17 +76,26 @@ public class QuizDialog extends JDialog {
         group.add(rBtnOpcion4);                
 
         btnSiguiente = new JButton("Siguiente");
+        btnAnterior = new JButton ("Anterior");
         
         pnl.add(this.lblEnunciado);
-        pnl2.add(this.lblOpcion1);
-        pnl2.add(this.rBtnOpcion1);
-        pnl2.add(this.lblOpcion2);
-        pnl2.add(this.rBtnOpcion2);
-        pnl2.add(this.lblOpcion3);
-        pnl2.add(this.rBtnOpcion3);
-        pnl2.add(this.lblOpcion4);
-        pnl2.add(this.rBtnOpcion4);
+        
+        pnlP1.add(this.lblOpcion1);
+        pnlP1.add(this.rBtnOpcion1);
+        pnlP2.add(this.lblOpcion2);
+        pnlP2.add(this.rBtnOpcion2);
+        pnlP3.add(this.lblOpcion3);
+        pnlP3.add(this.rBtnOpcion3);
+        pnlP4.add(this.lblOpcion4);
+        pnlP4.add(this.rBtnOpcion4);
+        pnl3.add(this.btnAnterior);
+        pnl3.add(this.lblNumeracion);
         pnl3.add(this.btnSiguiente);
+                
+        pnl2.add(pnlP1);
+        pnl2.add(pnlP2);
+        pnl2.add(pnlP3);
+        pnl2.add(pnlP4);
 
         add(pnl, BorderLayout.NORTH);
         add(pnl2, BorderLayout.CENTER);
@@ -119,6 +145,15 @@ public class QuizDialog extends JDialog {
     public void limpiarSeleccion(){
         group.clearSelection();
     }
+
+    public JButton getBtnAnterior() {
+        return btnAnterior;
+    }
+
+    public void setLblNumeracion(String num) {
+        this.lblNumeracion.setText(num);
+    }
+    
     
     
 }

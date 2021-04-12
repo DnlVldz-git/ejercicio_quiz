@@ -187,6 +187,7 @@ public class PrincipalFrame extends JFrame {
                 numPre += 1;
                 quizDialog.setVisible(true);
                 quizDialog.setLblNumeracion(numPre + " de " + quiz.getNumPreguntas());
+                quiz.fill();
             }
 
         };
@@ -195,41 +196,41 @@ public class PrincipalFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 Quiz quiz = control.getPreguntasAt(responderDialog.getComboBoxIndex());
-                
-                if (quiz.getRespuesta(numPre-1) == -1) {
 
-                } else {
-                    setSeleccionQuizDialog(quiz.getRespuesta(numPre-1));
-                }  
-                
                 numPreguntas = quiz.getNumPreguntas();
-                ArrayList<Pregunta> preguntas = quiz.getPreguntas();               
+                ArrayList<Pregunta> preguntas = quiz.getPreguntas();
                 quizDialog.setLblNumeracion(numPre + " de " + quiz.getNumPreguntas());
-                
-                if ((esCorrecta(preguntas.get(numPre - 1), getCorrecta()))&&(quiz.getRespuesta(numPre-1) == -1)) {
+
+                if ((esCorrecta(preguntas.get(numPre - 1), getCorrecta())) && (quiz.getRespuesta(numPre - 1) == -1)) {
                     numCorrectas += 1;
-                    System.out.println("Correctas: "+ numCorrectas);
                 }
 
                 if (!respuestaVacia()) {
                     JOptionPane.showMessageDialog(quizDialog, "Seleccione una respuesta");
-                } else if ((numPre != quiz.getNumPreguntas())) {                    
-                    quiz.setRespuestas(numPre-1, getCorrecta());
+                } else if ((numPre != quiz.getNumPreguntas())) {
+                    quiz.setRespuestas(numPre - 1, getCorrecta());
                     quizDialog.limpiarSeleccion();
                     quizDialog.setLblEnunciado(preguntas.get(numPre).getPregunta());
                     quizDialog.setLblOpcion1(preguntas.get(numPre).getOp1());
                     quizDialog.setLblOpcion2(preguntas.get(numPre).getOp2());
                     quizDialog.setLblOpcion3(preguntas.get(numPre).getOp3());
-                    quizDialog.setLblOpcion4(preguntas.get(numPre).getOp4());                    
+                    quizDialog.setLblOpcion4(preguntas.get(numPre).getOp4());
+
+                    if (quiz.getRespuesta(numPre - 1) == -1) {
+
+                    } else {
+                        
+                        setSeleccionQuizDialog(quiz.getRespuesta(numPre));
+                    }
+
                     numPre += 1;
                 } else if ((numPre == quiz.getNumPreguntas())) {
                     quizDialog.limpiarSeleccion();
                     JOptionPane.showMessageDialog(quizDialog, "Ha contestado el examen, su calificación es: \n" + (float) (((float) numCorrectas / (float) quiz.getNumPreguntas()) * 100) + "\nCon " + numCorrectas + "/" + quiz.getNumPreguntas() + " aciertos");
                     quizDialog.setVisible(false);
                 }
-                System.out.println(numPre);
                 quizDialog.setLblNumeracion(numPre + " de " + quiz.getNumPreguntas());
-                
+
             }
         };
 
@@ -245,17 +246,41 @@ public class PrincipalFrame extends JFrame {
                 } else {
 
                     Quiz quiz = control.getPreguntasAt(responderDialog.getComboBoxIndex());
-                    
+
                     numPreguntas = quiz.getNumPreguntas();
+
                     ArrayList<Pregunta> preguntas = quiz.getPreguntas();
+
+                    
+                    
                     --numPre;
+
+                    if (respuestaVacia()) {
+                        
+                        System.out.println("numpre: "+numPre);
+                        if ((esCorrecta(preguntas.get(numPre), getCorrecta()))&&(quiz.getRespuesta(numPre ) == -1)) {
+                            numCorrectas += 1;
+                            System.out.println("correct " + numCorrectas);
+                        }
+                        quiz.setRespuestas(numPre, getCorrecta());    
+                    }
+                    
+                    if (quiz.getRespuesta(numPre - 1) == -1) {
+                        
+                    } else {
+                        setSeleccionQuizDialog(quiz.getRespuesta(numPre - 1));
+                    }
+
+                    
+                    
+                    
                     quizDialog.setLblNumeracion(numPre + " de " + quiz.getNumPreguntas());
 
                     quizDialog.limpiarSeleccion();
-                    if (quiz.getRespuesta(numPre-1) == -1) {
+                    if (quiz.getRespuesta(numPre - 1) == -1) {
 
                     } else {
-                        setSeleccionQuizDialog(quiz.getRespuesta(numPre-1));
+                        setSeleccionQuizDialog(quiz.getRespuesta(numPre - 1));
                     }
                     quizDialog.setLblEnunciado(preguntas.get(numPre - 1).getPregunta());
                     quizDialog.setLblOpcion1(preguntas.get(numPre - 1).getOp1());
@@ -308,6 +333,7 @@ public class PrincipalFrame extends JFrame {
     }
 
     public void setSeleccionQuizDialog(int num) {
+
         switch (num) {
             case 1:
                 quizDialog.getrBtnOpcion1().setSelected(true);
